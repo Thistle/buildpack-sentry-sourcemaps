@@ -20,10 +20,10 @@ npm install -g @sentry/cli
 sentry-cli releases new -p $SENTRY_PROJECT $SOURCE_VERSION
 
 # Upload sourcemaps
-sentry-cli releases files $SOURCE_VERSION upload-sourcemaps --ext map --no-rewrite "$BUILD_DIR/build"
+sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --ignore **/node_modules --ext ts --ext map --ext js ./
 
 # Set commit-release association
-sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Airbase/airbase-frontend@$SOURCE_VERSION"
+# sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Airbase/airbase-frontend@$SOURCE_VERSION"
 
 # Finalize release
 sentry-cli releases finalize $SOURCE_VERSION
