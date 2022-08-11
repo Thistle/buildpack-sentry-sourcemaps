@@ -27,3 +27,6 @@ sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO
 
 # Finalize release
 sentry-cli releases finalize $SOURCE_VERSION
+
+# Remove maps so they aren't publicly accessible
+rm $BUILD_DIR/*.map
