@@ -21,7 +21,7 @@ echo "Thistle/$GITHUB_REPO_NAME@$SOURCE_VERSION"
 # Setup sentry-cli
 npm install -g @sentry/cli
 
-# Create new release
+echo "-----> Creating Sentry release ${SOURCE_VERSION} for organization '${SENTRY_ORG}' in project '${SENTRY_PROJECT}'"
 sentry-cli releases new -p $SENTRY_PROJECT $SOURCE_VERSION
 
 # Upload sourcemaps
