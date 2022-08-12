@@ -6,12 +6,17 @@ set -e
 BUILD_DIR=$(cd "$1/" && pwd)
 ENV_DIR=$(cd "$3/" && pwd)
 
-for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT; do
+for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT GITHUB_REPO_NAME; do
     [[ -f "${ENV_DIR}/${key}" ]] && export "$key=$(cat "${ENV_DIR}/${key}")"
     [[ -z "${!key}" ]] && echo "-----> ${key} is missing or empty: unable to continue." && exit 1
 done
 
 export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
+
+echo "BUILD_DIR: $BUILD_DIR"
+echo "ENV_DIR: $ENV_DIR"
+echo "SOURCE_VERSION: $SOURCE_VERSION"
+echo "Thistle/$GITHUB_REPO_NAME@$SOURCE_VERSION"
 
 # Setup sentry-cli
 npm install -g @sentry/cli
@@ -20,7 +25,7 @@ npm install -g @sentry/cli
 sentry-cli releases new -p $SENTRY_PROJECT $SOURCE_VERSION
 
 # Upload sourcemaps
-sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR"
+sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/static/dist/"
 
 # Set commit-release association
 sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO_NAME@$SOURCE_VERSION"
@@ -29,4 +34,4 @@ sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO
 sentry-cli releases finalize $SOURCE_VERSION
 
 # Remove maps so they aren't publicly accessible
-rm $BUILD_DIR/*.map
+rm $BUILD_DIR/static/dist/*.map
