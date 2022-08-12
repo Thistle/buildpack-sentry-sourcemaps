@@ -20,7 +20,7 @@ echo "-----> Creating Sentry release ${SOURCE_VERSION} for organization '${SENTR
 sentry-cli releases new -p $SENTRY_PROJECT $SOURCE_VERSION
 
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
-sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/static/dist/"
+sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
 echo "-----> Setting commits from Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
 sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
@@ -30,3 +30,4 @@ sentry-cli releases finalize $SOURCE_VERSION
 
 # Remove maps so they aren't publicly accessible
 rm $BUILD_DIR/static/dist/*.map
+rm $BUILD_DIR/staticfiles/dist/*.map
