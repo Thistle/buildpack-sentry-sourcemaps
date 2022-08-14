@@ -6,7 +6,7 @@ set -e
 BUILD_DIR=$(cd "$1/" && pwd)
 ENV_DIR=$(cd "$3/" && pwd)
 
-for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT GITHUB_REPO_SLUG; do
+for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT GITHUB_REPO_SLUG SENTRY_RELEASE; do
     [[ -f "${ENV_DIR}/${key}" ]] && export "$key=$(cat "${ENV_DIR}/${key}")"
     [[ -z "${!key}" ]] && echo "-----> ${key} is missing or empty: unable to continue." && exit 1
 done
@@ -16,14 +16,14 @@ export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
 # Setup sentry-cli
 npm install -g @sentry/cli
 
-echo "-----> Creating Sentry release ${SOURCE_VERSION} for organization '${SENTRY_ORG}' in project '${SENTRY_PROJECT}'"
-sentry-cli releases new -p $SENTRY_PROJECT $SOURCE_VERSION
+#echo "-----> Creating Sentry release ${SOURCE_VERSION} for organization '${SENTRY_ORG}' in project '${SENTRY_PROJECT}'"
+#sentry-cli releases new -p $SENTRY_PROJECT $SOURCE_VERSION
 
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
 sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
-echo "-----> Setting commits from Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
-sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
+#echo "-----> Setting commits from Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
+#sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
 
 # Finalize release
 sentry-cli releases finalize $SOURCE_VERSION
