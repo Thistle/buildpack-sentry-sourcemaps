@@ -17,7 +17,7 @@ export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
 npm install -g @sentry/cli
 
 echo "-----> Creating Sentry release ${SENTRY_RELEASE} for organization '${SENTRY_ORG}' in project '${SENTRY_PROJECT}'"
-sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE -r
+sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
 
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
 sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
