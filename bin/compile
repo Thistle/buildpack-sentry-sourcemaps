@@ -22,10 +22,7 @@ sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
 sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
-#echo "-----> Setting commits from Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
-#sentry-cli releases set-commits "$SOURCE_VERSION" --commit "Thistle/$GITHUB_REPO_SLUG@$SOURCE_VERSION"
-
-# Finalize release
+echo "-----> Finalizing release $SENTRY_RELEASE"
 sentry-cli releases finalize $SENTRY_RELEASE
 
 # Remove maps so they aren't publicly accessible
