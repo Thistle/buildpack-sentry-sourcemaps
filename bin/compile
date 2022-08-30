@@ -16,17 +16,13 @@ export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
 # Setup sentry-cli
 npm install -g @sentry/cli
 
-SENTRY_PROJECT="thistle-react thistle-web"
-projects=""
 for proj in $(echo $SENTRY_PROJECT | tr ',' ' '); do
-	projects+="-p ${proj} " 
+	echo "-----> Creating Sentry release ${SENTRY_RELEASE} for organization '${SENTRY_ORG}' in project '${proj}'"
+	sentry-cli releases new -p $proj $SENTRY_RELEASE
 done
 
-echo "-----> Creating Sentry release ${SENTRY_RELEASE} for organization '${SENTRY_ORG}' in project(s) '${projects}'"
-sentry-cli releases new $projects $SENTRY_RELEASE
-
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
-sentry-cli releases files $SOURCE_VERSION upload-sourcemaps upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
+sentry-cli releases files $SOURCE_VERSION upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
 echo "-----> Finalizing release $SENTRY_RELEASE"
 sentry-cli releases finalize $SENTRY_RELEASE
