@@ -22,10 +22,10 @@ for proj in $(echo $SENTRY_PROJECT | tr ',' ' '); do
 done
 
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
-sentry-cli releases files $SOURCE_VERSION upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
+sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps --url-prefix '~/static/dist' --log-level debug --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
 echo "-----> Sending deploy notiification for environment"
-sentry-cli releases deploys $SOURCE_VERSION new -e $ENV_NAME
+sentry-cli releases deploys $SENTRY_RELEASE new -e $ENV_NAME
 
 echo "-----> Finalizing release $SENTRY_RELEASE"
 sentry-cli releases finalize $SENTRY_RELEASE
