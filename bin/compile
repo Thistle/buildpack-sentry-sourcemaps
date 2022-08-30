@@ -6,7 +6,7 @@ set -e
 BUILD_DIR=$(cd "$1/" && pwd)
 ENV_DIR=$(cd "$3/" && pwd)
 
-for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT GITHUB_REPO_SLUG SENTRY_RELEASE; do
+for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT GITHUB_REPO_SLUG SENTRY_RELEASE ENV_NAME; do
     [[ -f "${ENV_DIR}/${key}" ]] && export "$key=$(cat "${ENV_DIR}/${key}")"
     [[ -z "${!key}" ]] && echo "-----> ${key} is missing or empty: unable to continue." && exit 1
 done
@@ -24,8 +24,12 @@ done
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
 sentry-cli releases files $SOURCE_VERSION upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
+echo "-----> Sending deploy notiification for environment"
+sentry-cli releases deploys $SOURCE_VERSION new -e $ENV_NAME
+
 echo "-----> Finalizing release $SENTRY_RELEASE"
 sentry-cli releases finalize $SENTRY_RELEASE
+
 
 # Remove maps so they aren't publicly accessible
 rm $BUILD_DIR/static/dist/*.map
