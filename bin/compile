@@ -6,7 +6,7 @@ set -e
 BUILD_DIR=$(cd "$1/" && pwd)
 ENV_DIR=$(cd "$3/" && pwd)
 
-for key in SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT SENTRY_PROJECT_REACT GITHUB_REPO_SLUG SENTRY_RELEASE ENV_NAME; do
+for key in SENTRY_LOG_LEVEL SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT SENTRY_PROJECT_REACT GITHUB_REPO_SLUG SENTRY_RELEASE ENV_NAME; do
     [[ -f "${ENV_DIR}/${key}" ]] && export "$key=$(cat "${ENV_DIR}/${key}")"
     [[ -z "${!key}" ]] && echo "-----> ${key} is missing or empty: unable to continue." && exit 1
 done
@@ -24,7 +24,7 @@ echo "-----> Creating Sentry release ${SENTRY_RELEASE} for organization '${SENTR
 sentry-cli releases new -p $SENTRY_PROJECT_REACT $SENTRY_RELEASE
 
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
-sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps --url-prefix '~/static/dist' --log-level debug --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
+sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
 echo "-----> Sending deploy notiification for environment"
 sentry-cli releases deploys $SENTRY_RELEASE new -e $ENV_NAME
