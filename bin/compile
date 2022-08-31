@@ -6,7 +6,7 @@ set -e
 BUILD_DIR=$(cd "$1/" && pwd)
 ENV_DIR=$(cd "$3/" && pwd)
 
-for key in SENTRY_LOG_LEVEL SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT SENTRY_PROJECT_REACT GITHUB_REPO_SLUG SENTRY_RELEASE SENTRY_ENV_NAME; do
+for key in SENTRY_LOG_LEVEL SENTRY_AUTH_TOKEN SENTRY_ORG SENTRY_PROJECT SENTRY_PROJECT_REACT GITHUB_REPO_SLUG SENTRY_RELEASE ENV_NAME; do
     [[ -f "${ENV_DIR}/${key}" ]] && export "$key=$(cat "${ENV_DIR}/${key}")"
     [[ -z "${!key}" ]] && echo "-----> ${key} is missing or empty: unable to continue." && exit 1
 done
@@ -15,6 +15,7 @@ export PATH="$BUILD_DIR/.heroku/node/bin:$BUILD_DIR/.heroku/yarn/bin":$PATH
 
 # Setup sentry-cli
 npm install -g @sentry/cli
+
 
 echo "-----> Creating Sentry release ${SENTRY_RELEASE} for organization '${SENTRY_ORG}' in project '${SENTRY_PROJECT}'"
 sentry-cli releases new -p $SENTRY_PROJECT $SENTRY_RELEASE
@@ -25,8 +26,8 @@ sentry-cli releases new -p $SENTRY_PROJECT_REACT $SENTRY_RELEASE
 echo "-----> Uploading sourcemaps from $BUILD_DIR/static/dist/"
 sentry-cli releases files $SENTRY_RELEASE upload-sourcemaps --url-prefix '~/static/dist' --ignore **/node_modules --ext ts --ext map --ext js "$BUILD_DIR/staticfiles/dist/"
 
-echo "-----> Sending deploy notiification for environment '${SENTRY_ENV_NAME}'"
-sentry-cli releases deploys $SENTRY_RELEASE new -e $SENTRY_ENV_NAME
+echo "-----> Sending deploy notiification for environment"
+sentry-cli releases deploys $SENTRY_RELEASE new -e $ENV_NAME
 
 echo "-----> Finalizing release $SENTRY_RELEASE"
 sentry-cli releases finalize $SENTRY_RELEASE
