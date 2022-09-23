@@ -1,6 +1,7 @@
 # buildpack-sentry-sourcemaps
 
 Heroku buildpack to upload sourcemaps to Sentry using `sentry-cli`.
+Note from Michael: this buildpack is not being used on Thistle apps. The main issue I encountered when using this method of giving release info to Sentry is that it doesn't run on promotion to production. Since we have a two-part prod pipeline, the release finalization should be sent on promotion.
 
 ## Usage
 
